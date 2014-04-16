@@ -7,6 +7,9 @@ require './models/rules'
 require './models/entities'
 require './models/offer'
 
+LOCALITIES  = 1
+ORGANISMS   = 3
+
 
 class API_RANOP_App < Sinatra::Base
 
@@ -24,17 +27,27 @@ class API_RANOP_App < Sinatra::Base
     @entity.to_json
 	end
 
+  get '/localities', :provides => :json do
+    @entities = Entities.find(:all, :conditions => [ "tipo_entidad_id = ?", LOCALITIES], :order => 'nombre')
+    @entities.to_json
+  end
+
+  get '/organisms', :provides => :json do
+    @entities = Entities.find(:all, :conditions => [ "tipo_entidad_id = ?", ORGANISMS], :order => 'nombre');
+    @entities.to_json
+  end
+
   get '/rules', :provides => :json do
     @rules = Rules.find(:all, :order => 'titulo')
     @rules.to_json
   end
 
-  get '/rules/:id', :provides => :json do
+  get '/rule/:id', :provides => :json do
     @rule = Rules.find(params[:id])
     @rule.to_json
   end
 
-  get '/offer', :provides => :json do
+  get '/offers', :provides => :json do
     @offers = Offer.find(:all, :order => 'titulo')
     @offers.to_json
   end
