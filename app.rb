@@ -11,7 +11,7 @@ require './models/offer'
 class API_RANOP_App < Sinatra::Base
 
   get '/' do
-    "Hello, world! - API RANOP" 
+    "API RANOP" 
   end
 
   get '/entities', :provides => :json do
