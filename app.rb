@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'sinatra/activerecord'
+require 'sinatra/jbuilder'
 require 'json'
-require 'mysql'
 
 require './models/rules'
 require './models/entities'

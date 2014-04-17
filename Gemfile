@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gem 'sinatra', :github => "sinatra/sinatra"
 
-gem 'mysql', '~> 2.9.1'
+gem 'mysql2'
 # other dependencies
 gem 'haml'                    # for instance, if you use haml
 gem 'activerecord', '~> 3.0'  # maybe you also need ActiveRecord 3.x
