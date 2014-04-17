@@ -7,6 +7,7 @@ require './models/rules'
 require './models/entities'
 require './models/offer'
 
+
 LOCALITIES  = 1
 ORGANISMS   = 3
 
@@ -27,7 +28,8 @@ class API_RANOP_App < Sinatra::Base
   get '/locality/:id', :provides => :json do
     begin
       @locality = Entities.where("tipo_entidad_id = :tipo_entidad_id AND id = :id",{tipo_entidad_id: LOCALITIES, id: params[:id]})
-      @locality.to_json
+      # @locality.to_json
+      jbuilder :'localities/show'
     rescue ActiveRecord::RecordNotFound
       status 404
     end
