@@ -13,35 +13,60 @@ ORGANISMS   = 3
 
 class API_RANOP_App < Sinatra::Base
 
-  # rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-
   get '/' do
     "API RANOP" 
   end
 
+  ### Localidades
+
   get '/localities', :provides => :json do
-    @entities = Entities.find(:all, :conditions => [ "tipo_entidad_id = ?", LOCALITIES], :order => 'nombre')
+    @localities = Entities.where("tipo_entidad_id = :tipo_entidad_id", {tipo_entidad_id: LOCALITIES}).order('nombre DESC')
+    @localities.to_json
+  end
+
+  get '/locality/:id', :provides => :json do
+    begin
+      @locality = Entities.where("tipo_entidad_id = :tipo_entidad_id AND id = :id",{tipo_entidad_id: LOCALITIES, id: params[:id]})
+      @locality.to_json
+    rescue ActiveRecord::RecordNotFound
+      status 404
+    end
+  end
+
+  ### Organismos
+
+  get '/organisms', :provides => :json do
+    @entities = Entities.where("tipo_entidad_id = :tipo_entidad_id", {tipo_entidad_id: ORGANISMS}).order('nombre DESC')
     @entities.to_json
   end
 
-  get '/organisms', :provides => :json do
-    @entities = Entities.find(:all, :conditions => [ "tipo_entidad_id = ?", ORGANISMS], :order => 'nombre');
-    @entities.to_json
+  get '/organism/:id', :provides => :json do
+    begin
+      @organism = Entities.where("tipo_entidad_id = :tipo_entidad_id AND id = :id", {tipo_entidad_id: ORGANISMS, id: params[:id]})
+      @organism.to_json
+    rescue ActiveRecord::RecordNotFound
+      status 404
+    end
   end
+
+  ### Entidades (Localidades y Organismos)
 
   get '/entities', :provides => :json do
     @entities = Entities.find(:all, :order => 'nombre')
     @entities.to_json
   end
 
-	get '/entities/:id', :provides => :json do
+	get '/entity/:id', :provides => :json do
     begin
       @entity = Entities.find(params[:id])
       @entity.to_json
-      rescue ActiveRecord::RecordNotFound
+      entity_url(@entity)
+    rescue ActiveRecord::RecordNotFound
       status 404
     end
 	end
+
+  ### Adhesiones
 
   get '/rules', :provides => :json do
     @rules = Rules.find(:all, :order => 'titulo')
@@ -52,10 +77,12 @@ class API_RANOP_App < Sinatra::Base
     begin
       @rule = Rules.find(params[:id])
       @rule.to_json
-      rescue ActiveRecord::RecordNotFound
+    rescue ActiveRecord::RecordNotFound
       status 404
     end
   end
+
+  ### Oferta Normativa
 
   get '/offers', :provides => :json do
     @offers = Offer.find(:all, :order => 'titulo')
@@ -66,12 +93,12 @@ class API_RANOP_App < Sinatra::Base
     begin
       @offer = Offer.find(params[:id])
       @offer.to_json
-      rescue ActiveRecord::RecordNotFound
+    rescue ActiveRecord::RecordNotFound
       status 404
     end
   end
 
-  #Error Handling
+  ### Error Handling
  
   not_found do
     "404 Not Found"
@@ -85,4 +112,18 @@ class API_RANOP_App < Sinatra::Base
     'Internal Server Errror'
   end
 
+  ## Helpers
+
+  def extract(object, attribute)
+    object.respond_to?(attribute) ? object.send(attribute) : object
+  end
+
+  def entity_path(entity)
+    id = extract(entity, :id)
+    "/entity/#{id}"
+  end
+
+  def entity_url(entity)
+    url entity_path(entity)
+  end
 end
